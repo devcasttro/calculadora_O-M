@@ -1,31 +1,25 @@
-# Taxa de variação do tempo de descarga
-variacao_taxa_descarga = 5
+import flet as ft
+from formula_calculo import calcular, status
 
-# Dados de saída do inversor
-tensao_inversor = 127
-corrente_inversor = 3.937
 
-# Dados da bateria
-capacidade_bateria = 100
-volt_bateria = 48
+def main(page: ft.Page):
+    def button_clicked(e):
 
-# Formulá de Cálculo
-potencia_inversor = (tensao_inversor * corrente_inversor) * 1
-potencia_bateria = (capacidade_bateria * volt_bateria)
+        tx = calcular(int(tb1.value), float(tb2.value), int(tb3.value), int(tb4.value))
 
-tempo_descarga_hora = potencia_bateria / potencia_inversor
+        t1.value = f'A taxa de descarga da bateria: {tx:.3f}'
 
-tempo_descarga_min = tempo_descarga_hora * 60
+        t2.value = status(tx)
 
-taxa_descarga = volt_bateria / tempo_descarga_min
+        page.update()
 
-# Cálcula o valor de referencia da % de variação
-percentual_taxa_descarga = taxa_descarga * variacao_taxa_descarga / 100
+    t1 = ft.Text()
+    t2 = ft.Text()
+    tb1 = ft.TextField(label="Tensão Inversor", hint_text="Tensão de operação do inversor")
+    tb2 = ft.TextField(label="Corrente Inversor", hint_text="Corrente de operação do inversor")
+    tb3 = ft.TextField(label="Capacidade da Bateria", hint_text="Capacidade em Ah da bateria")
+    tb4 = ft.TextField(label="Voltagem da Bateria", hint_text="Voltagem de operação da bateria")
+    b = ft.ElevatedButton(text="Calcular", on_click=button_clicked)
+    page.add(tb1, tb2, tb3, tb4, b, t1, t2)
 
-print(f'A taxa de descarga da bateria é igual: {taxa_descarga:.3f}')
-
-if taxa_descarga >= (0.083 - percentual_taxa_descarga):
-    print('Valor considerado: BOM')
-
-else:
-    print('Valor considerado: RUIM')
+ft.app(target=main)
